@@ -1250,9 +1250,14 @@ def find_latest_installed_tool(name):
 
 # npm install in Emscripten root directory
 def emscripten_npm_install(tool, directory):
+  # Newer version of the sdk include the node_modules directory
+  # in which case there is no need to run npm here.
+  if os.path.exists(os.path.join(tool.installation_path(), 'node_modules')):
+    return
+
   node_tool = find_latest_installed_tool('node')
   if not node_tool:
-    print('Failed to run "npm ci" in installed Emscripten root directory ' + tool.installation_path() + '! Please install node.js first!')
+    print('Failed to find node binary to run "npm ci". Please install node.js first!')
     return False
 
   node_path = os.path.join(node_tool.installation_path(), 'bin')
